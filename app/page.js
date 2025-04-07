@@ -1,5 +1,5 @@
 // app/page.js
-'use client'; // Mark this as a client component
+'use client';
 
 import { useRouter } from 'next/navigation';
 
