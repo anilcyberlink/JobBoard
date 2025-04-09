@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import bcrypt from 'bcryptjs'; // Import bcryptjs
-import { prisma } from '@prisma/client'; // Import Prisma client
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +12,7 @@ export default function LoginPage() {
   const redirectToRegister = () => {
     router.push('/register');
   };
+
   const handleLogin = async () => {
     if (!email || !password) {
       setError('Email and password are required');
@@ -21,25 +20,27 @@ export default function LoginPage() {
     }
 
     try {
-      // Find user by email
-      const user = await prisma.user.findUnique({
-        where: {
-          email,
-        },
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      // If user not found or password doesn't match, show error
-      if (!user || !(await bcrypt.compare(password, user.password))) {
-        setError('Invalid credentials');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
         return;
       }
 
-      // Set authentication cookie
+      // Set a cookie or token here (if returned from the API)
+      // Example only: you should use secure auth in production
       document.cookie = 'auth=true; path=/';
-      router.push('/backend'); // Redirect to the backend page
-    } catch (error) {
-      setError('Error logging in. Please try again.');
-      console.error(error);
+
+      router.push('/backend');
+    } catch (err) {
+      console.error(err);
+      setError('Something went wrong. Try again.');
     }
   };
 
