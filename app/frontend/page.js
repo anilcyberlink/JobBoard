@@ -1,4 +1,3 @@
-// app/frontend/page.js
 'use client'; 
 import { useState } from "react";
 
@@ -8,6 +7,12 @@ export default function FrontendPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate the fields
+    if (!title.trim() || !content.trim()) {
+      alert("Please fill in both the title and content.");
+      return;
+    }
 
     const newPost = { title, content, authorId: 1 }; // Use a hardcoded author ID or get it dynamically
 
